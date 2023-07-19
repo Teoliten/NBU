@@ -1,0 +1,12 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+#include "studbook.h"
+
+//FILE name
+const char* StudBook::FILENAME = "students.data";
+
+//Record size
+const int StudBook::REC_SIZE = 16;
