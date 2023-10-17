@@ -40,6 +40,7 @@ public:
   ~Scores();
 
   void add(const GameEntry &ent);
+  void remove(int pos);
   void print() const;
 
 private:
@@ -93,6 +94,15 @@ void Scores::add(const GameEntry &ent)
 
 } // add a new entry in the array of scores
 
+void Scores::remove(int pos) //remove entry from array of scores
+{
+  for(int i = pos; i < num_entries - 1; i++)
+  {
+    ptr_arr[i] = ptr_arr[i + 1];
+  }
+  num_entries--;
+}//remove
+
 void Scores::print() const
 {
   for (int i = 0; i < num_entries; i++)
@@ -110,14 +120,43 @@ int main()
   */
 
   Scores sc;
-  GameEntry ge1("Rick", 1024);
+  GameEntry ge1("1", 1);
   sc.add(ge1);
 
-  GameEntry ge2("Morty", 32);
+  GameEntry ge2("2", 2);
   sc.add(ge2);
 
-  GameEntry ge3("Summer", 64);
+  GameEntry ge3("3", 3);
   sc.add(ge3);
+
+  GameEntry ge4("4", 4);
+  sc.add(ge4);
+
+  GameEntry ge5("5", 5);
+  sc.add(ge5);
+
+  GameEntry ge6("6", 6);
+  sc.add(ge6);
+
+  GameEntry ge7("7", 7);
+  sc.add(ge7);
+
+  GameEntry ge8("8", 8);
+  sc.add(ge8);
+
+  GameEntry ge9("9", 9);
+  sc.add(ge9);
+
+  GameEntry ge10("10", 10);
+  sc.add(ge10);
+
+  GameEntry ge11("11", 11);
+  sc.add(ge11);
+
+  GameEntry ge12("12", 12);
+  sc.add(ge12);
+
+  sc.remove(0);
 
   sc.print();
   return 0;
