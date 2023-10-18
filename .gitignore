@@ -1,0 +1,12 @@
+# Ignore all
+*
+
+# Unignore all with extensions
+!*.*
+#ignore .out and .json
+*.out
+*.json
+*.rar
+*.exe
+# Unignore all dirs
+!*/
