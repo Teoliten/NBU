@@ -85,14 +85,17 @@ void DVector::insert(int pos, int number)
   {
     throw out_of_range("...");
   }
+
   if (numb >= cpct)
   {
     resize(max(1, cpct << 1));
   }
+
   for (int i = numb - 1; i >= pos; i--)
   {
     ptr_arr[i + 1] = ptr_arr[i];
   }
+  
   ptr_arr[pos] = number;
   numb++;
 } // insert
