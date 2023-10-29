@@ -68,7 +68,7 @@ const E &Vector<E>::at(int indx) const
 template <typename E>
 void Vector<E>::set(int indx, E elmt)
 {
-    arr[indx] = elmt; // when to increase numb or not :/
+    arr[indx] = elmt;
 } // set
 
 template <typename E>
