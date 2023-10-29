@@ -181,8 +181,10 @@ private:
 };                          // Iterator
 
 template <typename E>
-Iterator<E>::Iterator(const Vector<E> &v) : vector(v), currentIndx(0) // Default constructor
+Iterator<E>::Iterator(const Vector<E> &v) // Default constructor
 {
+    vector = v;
+    currentIndx = 0;
 } // Iterator
 
 template <typename E>
