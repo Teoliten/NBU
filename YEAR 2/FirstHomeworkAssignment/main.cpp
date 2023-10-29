@@ -2,14 +2,6 @@
 
 using namespace std;
 //--------Throw---------
-class VectorFull : public runtime_error
-{
-public:
-    VectorFull(const string &msg) : runtime_error(msg)
-    {
-    }
-}; // VectorFull
-
 class VectorEmpty : public runtime_error
 {
 public:
@@ -221,7 +213,6 @@ const E &Iterator<E>::current() const
     }
     return vector.at(currentIndx);
 } // current
-
 //-------Iterator-------
 
 //---------Main---------
