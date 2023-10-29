@@ -24,18 +24,18 @@ template <typename E>
 class Vector
 {
 public:
-    Vector();
-    ~Vector();
-    E at(int indx);
-    const E &at(int indx) const;
-    void set(int indx, E elmt);
-    void insert(int indx, E elmt);
-    void erase(int indx);
-    void resize(int cpct);
-    void print();
-    int size() const;
-    bool isEmpty() const;
-    int getCPCT();
+    Vector();                      // Default constructor.
+    ~Vector();                     // Destructor.
+    E at(int indx);                // Return element at given index.
+    const E &at(int indx) const;   // Return element at given index. (For Class Iterator)
+    void set(int indx, E elmt);    // Set element at given index, replacing previous entry at index.
+    void insert(int indx, E elmt); // Insert element at given index, pushing other elements to the right if necessary.
+    void erase(int indx);          // Remove element at index, moving elements from the right to left to fill gap.
+    void resize(int cpct);         // Increase size of vector.
+    void print();                  // Print current vector.
+    int size() const;              // Returns size of vector, number of elements.
+    bool isEmpty() const;          // Returns True when empty.
+    int getCPCT();                 // Returns current Capacity.
 
 private:
     int CPCT;
@@ -52,7 +52,7 @@ Vector<E>::Vector() // Default constructor
 }; // Vector
 
 template <typename E>
-Vector<E>::~Vector()
+Vector<E>::~Vector() // Destructor
 {
     delete[] arr;
 } //~Vector
@@ -176,10 +176,10 @@ template <typename E>
 class Iterator
 {
 public:
-    Iterator(const Vector<E> &v);
-    bool isNext() const;
-    void next();
-    const E &current() const; // Updated to return a const reference
+    Iterator(const Vector<E> &v); // Default constructor
+    bool isNext() const;          // True when there are more elements in the vector.
+    void next();                  // Go to next element in vector
+    const E &current() const;     // Return a const reference of element which the iterator is pointing at.
 
 private:
     const Vector<E> &vector;
@@ -189,15 +189,15 @@ private:
 };                          // Iterator
 
 template <typename E>
-Iterator<E>::Iterator(const Vector<E> &v) : vector(v), currentIndx(0)
+Iterator<E>::Iterator(const Vector<E> &v) : vector(v), currentIndx(0) // Default constructor
 {
-}
+} // Iterator
 
 template <typename E>
 bool Iterator<E>::isNext() const
 {
     return currentIndx < vector.size();
-}
+} // isNext
 
 template <typename E>
 void Iterator<E>::next()
@@ -210,7 +210,7 @@ void Iterator<E>::next()
     {
         throw out_of_range("Next_err: at end of vector!");
     }
-}
+} // Next
 
 template <typename E>
 const E &Iterator<E>::current() const
@@ -220,15 +220,15 @@ const E &Iterator<E>::current() const
         throw out_of_range("Current_err: index out of range!");
     }
     return vector.at(currentIndx);
-}
+} // current
 
 //-------Iterator-------
 
 //---------Main---------
 int main()
 {
-    Vector<int> vctr;
-    Iterator<int> itrt(vctr);
+    Vector<int> vctr;         // Initializing object for Vector class.
+    Iterator<int> itrt(vctr); // Initializing object for Iterator class, linked to object 'vctr'.
 
     vctr.insert(0, 42); // insert integer '42' at index '0'.
     vctr.insert(1, 11); // insert integer '1' at index '1'.
@@ -248,21 +248,25 @@ int main()
 
     vctr.print(); // printing vector "'99', '42'".
 
-    cout << vctr.getCPCT() << endl;
+    cout << "Current / Default capacity: " << vctr.getCPCT() << endl;
     // vctr.resize(512);
     // cout << vctr.getCPCT() << endl;
 
+    cout << "Adding 256 elements, 0 - 255." << endl
+         << endl;
     for (int i = 0; i < 256; i++)
     {
-        cout << "i: " << i << endl;
         vctr.insert(0, i);
     }
 
     vctr.print(); // printing vector, added 256 elements, to the already existing 2 elements. Maximum capacity was reached and a new capacity by left shifting it by one bit, multiplying the previous capacity by two. 256 -> 512.
-    cout << vctr.getCPCT() << endl;
-    cout << vctr.size() << endl;
+    cout << endl
+         << "New Capacity: " << vctr.getCPCT() << endl;
+    cout << "New Size: " << vctr.size() << endl;
 
-    cout << "Iterator printing: "; // showing all Iterator member functions.
+    cout << endl
+         << "Iterator printing:" << endl; // showing all Iterator member functions.
+
     while (itrt.isNext())
     {
         cout << itrt.current() << " ";
