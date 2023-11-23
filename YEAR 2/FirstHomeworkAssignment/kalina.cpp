@@ -6,43 +6,52 @@ as a base class in inheritance hierarchy that must
 include classes for arithmetic progression, geometric
 progression, and harmonic progression. Show polymorphism.
 */
-
 #include <iostream>
-
 using namespace std;
 
+
+
 //---------------------Progression---------------------
-class Progression // Base class
+// Abstract base class representing the concept of numerical progression
+class Progression
 {
 public:
   Progression(long start = 0) : current(start) {}
 
+  // Returns the first value in the progression
   long firstValue();
 
+  // Pure virtual function representing the generation of the next value in the progression
   virtual long nextValue() = 0;
 
 protected:
   long current;
 }; // Progression
 
+// Returns the first value in the progression
 long Progression::firstValue()
 {
   return current;
 } // firstValue
 //---------------------Progression---------------------
 
+
+
 //---------------------ArithmeticPr--------------------
-class ArithmeticPr : public Progression // N, add V every iteration, ex, N = 5, v = 1: 5, 6, 7, 8, 9, 10.
+// Derived class representing arithmetic progression: N, add V every iteration
+class ArithmeticPr : public Progression
 {
 public:
   ArithmeticPr(long start = 0, long value = 1) : Progression(start), value(value) {}
 
+  // Generates the next value in the arithmetic progression by adding the common difference
   long nextValue();
 
 private:
-  long value;
+  long value; // Common difference
 }; // ArithmeticPr
 
+// Generates the next value in the arithmetic progression by adding the common difference
 long ArithmeticPr::nextValue()
 {
   current += value;
@@ -50,18 +59,23 @@ long ArithmeticPr::nextValue()
 } // nextValue
 //---------------------ArithmeticPr--------------------
 
+
+
 //---------------------GeometricPr---------------------
-class GeometricPr : public Progression // Non-zero number, multiply by variable. Multiply previous with same variable over again. ex, n = 5. v = 3: 5, 5*3, 15*3, 45*3: 5 15, 45, 135.
+// Derived class representing geometric progression: Non-zero number, multiply by variable
+class GeometricPr : public Progression
 {
 public:
   GeometricPr(long start = 0, long value = 1) : Progression(start), value(value) {}
 
+  // Generates the next value in the geometric progression by multiplying the common ratio
   long nextValue();
 
 private:
-  long value;
+  long value; // Common ratio
 }; // GeometricPr
 
+// Generates the next value in the geometric progression by multiplying the common ratio
 long GeometricPr::nextValue()
 {
   current *= value;
@@ -69,15 +83,20 @@ long GeometricPr::nextValue()
 } // nextValue
 //---------------------GeometricPr---------------------
 
+
+
 //---------------------HarmonicPr----------------------
-class HarmonicPr : public Progression // For N sequece, 1, 2, 3, 4, 5, 6: Harmonic progression: 1/1, 1/2, 1/3, 1/4, 1/5, 1/6.
+// Derived class representing harmonic progression: For N sequence, 1, 2, 3, 4, 5, 6...
+class HarmonicPr : public Progression
 {
 public:
   HarmonicPr(long start = 1) : Progression(start) {}
 
+  // Generates the next value in the harmonic progression
   long nextValue();
 }; // HarmonicPr
 
+// Generates the next value in the harmonic progression
 long HarmonicPr::nextValue()
 {
   current++;
@@ -85,13 +104,18 @@ long HarmonicPr::nextValue()
 } // nextValue
 //---------------------HarmonicPr----------------------
 
+
+
+//---------------------main----------------------
+// Main function to demonstrate the progression classes
 int main()
 {
+  // Create instances of each progression
   ArithmeticPr ap(5, 1); // Start at 5, addition with 1 each time.
   GeometricPr gp(10, 2); // Start at 10, multiply with 2 each time.
   HarmonicPr hp(1);      // Start at 1, 1/2, 1/3, 1/4, 1/5 etc.
 
-  // Generate and print the first 5 values in the progressions
+  // Generate and print the first 5 values in each progression
   cout << "Arithmetic Progression (First five values): ";
   for (int i = 1; i <= 5; i++)
   {
@@ -118,3 +142,4 @@ int main()
 
   return 0;
 } // main
+//---------------------main----------------------
