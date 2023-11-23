@@ -1,10 +1,13 @@
 #ifndef BTREE_H
 #define BTREE_H
 
-#include <string>
+#include <iostream>// string? iostream?
+#include <iomanip>
 #include <stdexcept>
 
 using namespace std;
+
+
 
 //-----------------TreeExcept-----------------
 class TreeExcept : public runtime_error
@@ -16,23 +19,32 @@ public:
 
 TreeExcept::TreeExcept(const string &msg) : runtime_error(msg)
 {
-
 } // TreeExcept
 //-----------------TreeExcept-----------------
 
+
+
 //-----------------BTree-----------------
-template <typename TKey> // Binary tree class
+template <typename TKey>
 class BTree
 {
 public:
-  class Node;                                          // tree build out of nodes
-  class Position;                                      // position in tree
-  BTree();                                             // default constructor
-  ~BTree();                                            // destructor
-  void setRoot(const TKey &key);                       // set root of tree
-  Position getRoot() const;                            // gives position of root
-  void setLeft(const Position &pos, const TKey &key);  // set left child node
-  void setRight(const Position &pos, const TKey &key); // set right child node
+  class Node;                                             // tree build out of nodes
+  class Position; // position in tree
+                                          
+  BTree();                                                // default constructor
+  ~BTree();     // destructor
+                                            
+  void setRoot(const TKey &key);                          // set root of tree
+  Position getRoot() const;  // gives position of root
+                               
+  void setLeft(const Position &pos, const TKey &key);     // set left child node
+  void setRight(const Position &pos, const TKey &key);    // set right child node
+
+  void print() const;  // print tree given its root
+
+  int size() const;
+  bool empty() const;
 
 private:
   void deleteTree(Node *ptr_node); // recursivly delete tree
@@ -40,7 +52,10 @@ private:
   Node *ptr_root; // root of tree
   int numb;       // number of nodes
 
-}; // BTree
+  static const int SPC;
+  void printTree(const Node* ptr_node, int space) const;
+
+}; // Class BTree
 
 template <typename TKey>
 BTree<TKey>::BTree() : ptr_root(nullptr),
@@ -107,7 +122,41 @@ void BTree<TKey>::setRight(const Position &pos, const TKey &key)
   pos.ptr_node->ptr_right->ptr_prnt = pos.ptr_node;
   numb++;
 } // setRight
+
+template <typename TKey>
+void BTree<TKey>::print() const
+{
+    printTree(ptr_root, 0);
+} // print
+
+template <typename TKey>
+int BTree<TKey>::size() const
+{
+  return numb;
+} // size
+
+template <typename TKey>
+bool BTree<TKey>::empty() const
+{
+  return(!numb);
+} // empty
+
+template <typename TKey>
+const int BTree<TKey>::SPC = 3; // SPC
+
+template <typename TKey>
+void BTree<TKey>::printTree(const Node* ptr_node, int space) const
+{
+    if (ptr_node)
+    {
+        printTree(ptr_node->ptr_right, space += SPC);
+        cout << setw(space) << ptr_node->key << endl;
+        printTree(ptr_node->ptr_left, space);
+    }
+} // printTree
 //-----------------BTree-----------------
+
+
 
 //-----------------Node-----------------
 template <typename TKey>
@@ -136,6 +185,8 @@ BTree<TKey>::Node::Node(const TKey &key_p) : key(key_p),
 } // Node
 //-----------------Node-----------------
 
+
+
 //-----------------Position-----------------
 template <typename TKey>
 class BTree<TKey>::Position
@@ -156,8 +207,8 @@ public:
 private:
   BTNode *ptr_node; // pointer to current node
 
-  friend class BTree<TKey>;
-}; // Position
+friend class BTree<TKey>;
+}; // Class Position
 
 template <typename TKey>
 BTree<TKey>::Position::Position() : ptr_node(nullptr)
@@ -187,60 +238,62 @@ TKey &BTree<TKey>::Position::operator*()
 {
   if (!ptr_node)
   {
-    throw TreeExcept("Dereference null.");
+    throw TreeExcept("No node in tree.");
   }
   return ptr_node->key;
 } // dereference operator
 
 template <typename TKey>
-typename BTree<TKey>::Position::parent() const
+typename BTree<TKey>::Position BTree<TKey>::Position::parent() const
 {
   if (!ptr_node)
   {
-    throw TreeExcept("Dereference null.");
+    throw TreeExcept("No node in tree.");
   }
   return Position(ptr_node->ptr_prnt);
 } // node parent
 
 template <typename TKey>
-typename BTree<TKey>::Position::left() const
+typename BTree<TKey>::Position BTree<TKey>::Position::left() const
 {
   if (!ptr_node)
   {
-    throw TreeExcept("Dereference null.");
+    throw TreeExcept("No node in tree.");
   }
   return Position(ptr_node->ptr_left);
 } // node left
 
 template <typename TKey>
-typename BTree<TKey>::Position::right() const
+typename BTree<TKey>::Position BTree<TKey>::Position::right() const
 {
   if (!ptr_node)
   {
-    throw TreeExcept("Dereference null.");
+    throw TreeExcept("No node in tree.");
   }
   return Position(ptr_node->ptr_right);
 } // node right
 
 template <typename TKey>
-bool BTree<TKey>::Position::isRoot const
+bool BTree<TKey>::Position::isRoot() const
 {
   if (!ptr_node)
   {
-    throw TreeExcept("Dereference null.");
+    throw TreeExcept("No node in tree.");
   }
   return (!ptr_node->ptr_prnt);
 } // isRoot
 
 template <typename TKey>
-bool BTree<TKey>::Position::isExternal const
+bool BTree<TKey>::Position::isExternal() const
 {
   if (!ptr_node)
   {
-    throw TreeExcept("Dereference null.");
+    throw TreeExcept("No node in tree.");
   }
   return !(ptr_node->ptr_left || ptr_node->ptr_right);
 } // isExternal
 //-----------------Position-----------------
+
+
 
 #endif
