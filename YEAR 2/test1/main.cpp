@@ -11,8 +11,9 @@ void print(const vector<int> vctr)
   {
     cout << vctr[i] << " ";
   }
-  cout << endl << endl;
-}//print
+  cout << endl
+       << endl;
+} // print
 
 // Function to swap two elements in a vector
 void swapVal(vector<int> &vctr, int pos1, int pos2)
@@ -20,7 +21,7 @@ void swapVal(vector<int> &vctr, int pos1, int pos2)
   int tmp = vctr[pos1];
   vctr[pos1] = vctr[pos2];
   vctr[pos2] = tmp;
-}//swapVal
+} // swapVal
 
 // Function to partition the vector for quicksort
 int partition(vector<int> &vctr, int front, int end)
@@ -65,7 +66,7 @@ int partition(vector<int> &vctr, int front, int end)
   }
 
   return index;
-}//partition
+} // partition
 
 // Function to perform quicksort on a vector
 void quickSort(vector<int> &vctr, int front, int end)
@@ -80,7 +81,7 @@ void quickSort(vector<int> &vctr, int front, int end)
   // Recursively call quickSort on the partitions
   quickSort(vctr, front, part - 1);
   quickSort(vctr, part + 1, end);
-}//quickSort
+} // quickSort
 
 // Function to remove duplicates from a sorted vector
 void removeDuplicates(vector<int> &vctr)
@@ -125,7 +126,8 @@ int main()
     }
   }
 
-  cout << endl << "Given Vector: ";
+  cout << endl
+       << "Given Vector: ";
   print(vctr);
 
   // Sort the vector using quicksort
@@ -139,4 +141,4 @@ int main()
   print(vctr);
 
   return 0;
-}// main
+} // main
