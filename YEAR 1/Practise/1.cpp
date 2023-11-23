@@ -8,25 +8,35 @@ using namespace std;
 /*
  * 
  */
-string reverse(string str)
+void reverse(string &str)
 {
-    string result; 
-    cout << "reverse";
-    for(int i = str.length(); i > 0; i++)
+    int len = str.length();
+    for(int i = 0; i < len/2; i++)
     {
-        result[str.length() - i] = str[i];
+        char tmp = str[i];
+        str[i] = str[len - 1 - i];
+        str[len - 1 - i] = tmp;
     }
-    cout << result;
-    return result;
 }//reverse
 
 int unaffectedChar (string dataStream)
 {
     int  answer;
-    // Write your code here
-    cout << "what";
+    string copy = dataStream;
     reverse(dataStream);
     
+    int repeated = 0;
+
+    for(int i = 0; i < dataStream.length(); i++)
+    {
+        if(copy[i] == dataStream[i])
+        {
+            repeated++;
+        }
+    }
+
+    answer = repeated;
+
     return answer;
 }
 
@@ -36,7 +46,7 @@ int main()
 	//input for dataStream
 	string dataStream;
 	getline(cin,dataStream);
-	cout << "okay gg";
+	
     int result = unaffectedChar(dataStream);
 	cout << result;
 	
