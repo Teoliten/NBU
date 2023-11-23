@@ -1,13 +1,11 @@
 #ifndef BTREE_H
 #define BTREE_H
 
-#include <iostream>// string? iostream?
+#include <iostream> // string? iostream?
 #include <iomanip>
 #include <stdexcept>
 
 using namespace std;
-
-
 
 //-----------------TreeExcept-----------------
 class TreeExcept : public runtime_error
@@ -22,26 +20,24 @@ TreeExcept::TreeExcept(const string &msg) : runtime_error(msg)
 } // TreeExcept
 //-----------------TreeExcept-----------------
 
-
-
 //-----------------BTree-----------------
 template <typename TKey>
 class BTree
 {
 public:
-  class Node;                                             // tree build out of nodes
+  class Node;     // tree build out of nodes
   class Position; // position in tree
-                                          
-  BTree();                                                // default constructor
-  ~BTree();     // destructor
-                                            
-  void setRoot(const TKey &key);                          // set root of tree
-  Position getRoot() const;  // gives position of root
-                               
-  void setLeft(const Position &pos, const TKey &key);     // set left child node
-  void setRight(const Position &pos, const TKey &key);    // set right child node
 
-  void print() const;  // print tree given its root
+  BTree();  // default constructor
+  ~BTree(); // destructor
+
+  void setRoot(const TKey &key); // set root of tree
+  Position getRoot() const;      // gives position of root
+
+  void setLeft(const Position &pos, const TKey &key);  // set left child node
+  void setRight(const Position &pos, const TKey &key); // set right child node
+
+  void print() const; // print tree given its root
 
   int size() const;
   bool empty() const;
@@ -53,7 +49,7 @@ private:
   int numb;       // number of nodes
 
   static const int SPC;
-  void printTree(const Node* ptr_node, int space) const;
+  void printTree(const Node *ptr_node, int space) const;
 
 }; // Class BTree
 
@@ -126,7 +122,7 @@ void BTree<TKey>::setRight(const Position &pos, const TKey &key)
 template <typename TKey>
 void BTree<TKey>::print() const
 {
-    printTree(ptr_root, 0);
+  printTree(ptr_root, 0);
 } // print
 
 template <typename TKey>
@@ -138,25 +134,23 @@ int BTree<TKey>::size() const
 template <typename TKey>
 bool BTree<TKey>::empty() const
 {
-  return(!numb);
+  return (!numb);
 } // empty
 
 template <typename TKey>
 const int BTree<TKey>::SPC = 3; // SPC
 
 template <typename TKey>
-void BTree<TKey>::printTree(const Node* ptr_node, int space) const
+void BTree<TKey>::printTree(const Node *ptr_node, int space) const
 {
-    if (ptr_node)
-    {
-        printTree(ptr_node->ptr_right, space += SPC);
-        cout << setw(space) << ptr_node->key << endl;
-        printTree(ptr_node->ptr_left, space);
-    }
+  if (ptr_node)
+  {
+    printTree(ptr_node->ptr_right, space += SPC);
+    cout << setw(space) << ptr_node->key << endl;
+    printTree(ptr_node->ptr_left, space);
+  }
 } // printTree
 //-----------------BTree-----------------
-
-
 
 //-----------------Node-----------------
 template <typename TKey>
@@ -185,8 +179,6 @@ BTree<TKey>::Node::Node(const TKey &key_p) : key(key_p),
 } // Node
 //-----------------Node-----------------
 
-
-
 //-----------------Position-----------------
 template <typename TKey>
 class BTree<TKey>::Position
@@ -207,7 +199,7 @@ public:
 private:
   BTNode *ptr_node; // pointer to current node
 
-friend class BTree<TKey>;
+  friend class BTree<TKey>;
 }; // Class Position
 
 template <typename TKey>
@@ -293,7 +285,5 @@ bool BTree<TKey>::Position::isExternal() const
   return !(ptr_node->ptr_left || ptr_node->ptr_right);
 } // isExternal
 //-----------------Position-----------------
-
-
 
 #endif
