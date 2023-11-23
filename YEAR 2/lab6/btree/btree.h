@@ -1,11 +1,13 @@
 #ifndef BTREE_H
 #define BTREE_H
 
-#include <iostream> // string? iostream?
+#include <iostream>
 #include <iomanip>
 #include <stdexcept>
 
 using namespace std;
+
+
 
 //-----------------TreeExcept-----------------
 class TreeExcept : public runtime_error
@@ -19,6 +21,8 @@ TreeExcept::TreeExcept(const string &msg) : runtime_error(msg)
 {
 } // TreeExcept
 //-----------------TreeExcept-----------------
+
+
 
 //-----------------BTree-----------------
 template <typename TKey>
@@ -152,6 +156,8 @@ void BTree<TKey>::printTree(const Node *ptr_node, int space) const
 } // printTree
 //-----------------BTree-----------------
 
+
+
 //-----------------Node-----------------
 template <typename TKey>
 class BTree<TKey>::Node
@@ -168,8 +174,6 @@ private:
   friend class BTree<TKey>;
 }; // Class Node
 
-//--------------------HOMEWORK--------------------move constructor----------read book----------
-
 template <typename TKey>
 BTree<TKey>::Node::Node(const TKey &key_p) : key(key_p),
                                              ptr_prnt(nullptr),
@@ -178,6 +182,8 @@ BTree<TKey>::Node::Node(const TKey &key_p) : key(key_p),
 {
 } // Node
 //-----------------Node-----------------
+
+
 
 //-----------------Position-----------------
 template <typename TKey>
@@ -285,5 +291,7 @@ bool BTree<TKey>::Position::isExternal() const
   return !(ptr_node->ptr_left || ptr_node->ptr_right);
 } // isExternal
 //-----------------Position-----------------
+
+
 
 #endif

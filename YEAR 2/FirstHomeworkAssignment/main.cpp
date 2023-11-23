@@ -1,6 +1,9 @@
 #include <iostream>
 
 using namespace std;
+
+
+
 //--------Throw---------
 class VectorEmpty : public runtime_error
 {
@@ -10,6 +13,8 @@ public:
     }
 }; // VectorEmpty
 //--------Throw---------
+
+
 
 //--------Vector--------
 template <typename E>
@@ -163,6 +168,8 @@ int Vector<E>::getCPCT()
 }
 //--------Vector--------
 
+
+
 //-------Iterator-------
 template <typename E>
 class Iterator
@@ -216,6 +223,8 @@ const E &Iterator<E>::current() const
     return vector.at(currentIndx);
 } // current
 //-------Iterator-------
+
+
 
 //---------Main---------
 int main()
