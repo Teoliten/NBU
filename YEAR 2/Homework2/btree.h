@@ -47,11 +47,16 @@ public:
 
     void print() const; // print tree given its root
 
+    void eulerTour(const Position &pos) const;
+    void printExpression() const;
+
     int size() const;
     bool empty() const;
 
 private:
     void deleteTree(Node *ptr_node); // recursivly delete tree
+
+    void eulerTourHelper(const Node *ptr_node) const;
 
     Node *ptr_root; // root of tree
     int numb;       // number of nodes
@@ -114,6 +119,19 @@ void BTree<TKey>::deleteTree(Node *ptr_node)
 } // deleteTree
 
 template <typename TKey>
+void BTree<TKey>::eulerTourHelper(const Node *ptr_node) const
+{
+    if (ptr_node)
+    {
+        cout << "(" << ptr_node->key << " "; // Visit the node before the left subtree
+        eulerTourHelper(ptr_node->ptr_left);
+        cout << ") "; // Visit the node between the left and right subtrees
+        eulerTourHelper(ptr_node->ptr_right);
+        cout << ") "; // Visit the node after the right subtree
+    }
+} // eulerTourHelper
+
+template <typename TKey>
 void BTree<TKey>::setRoot(const TKey &key)
 {
   if (ptr_root)
@@ -171,6 +189,20 @@ void BTree<TKey>::print() const
 {
   printTree(ptr_root, 0);
 } // print
+
+template <typename TKey>
+void BTree<TKey>::eulerTour(const Position &pos) const
+{
+    eulerTourHelper(pos.ptr_node);
+} // eulerTour
+
+template <typename TKey>
+void BTree<TKey>::printExpression() const
+{
+    cout << "Expression Tree: ";
+    eulerTour(getRoot());
+    cout << endl;
+} // printExpression
 
 template <typename TKey>
 int BTree<TKey>::size() const
