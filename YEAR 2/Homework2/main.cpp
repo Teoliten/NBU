@@ -52,22 +52,23 @@ int main()
     btAssigned.print();
     cout << endl;
 
-    // // Modify the original tree
-    // bt.setLeft(pos, 8);
-    // bt.setRight(pos, 9);
+    // Modify the original tree
+    pos = pos.right();
+    bt.setLeft(pos, 8);
+    bt.setRight(pos, 9);
 
-    // // cout << "Modified Original Tree:" << endl;
-    // // bt.print();
-    // // cout << endl;
+    cout << "Modified Original Tree:" << endl;
+    bt.print();
+    cout << endl;
 
-    // // Verify that the copied and assigned trees remain unchanged
-    // cout << "Copied Tree After Modification (should be unchanged):" << endl;
-    // btCopy.print();
-    // cout << endl;
+    // Verify that the copied and assigned trees remain unchanged
+    cout << "Copied Tree After Modification (should be unchanged):" << endl;
+    btCopy.print();
+    cout << endl;
 
-    // cout << "Assigned Tree After Modification (should be unchanged):" << endl;
-    // btAssigned.print();
-    // cout << endl;
+    cout << "Assigned Tree After Modification (should be unchanged):" << endl;
+    btAssigned.print();
+    cout << endl;
 
     cout << "Modified Original Tree:" << endl;
     bt.print();

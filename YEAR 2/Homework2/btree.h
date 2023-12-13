@@ -33,10 +33,11 @@ public:
     class Position; // position in tree
 
     BTree();                          // default constructor
-    BTree(const BTree<TKey> &copy);   // copy constructor
     ~BTree();                         // destructor
 
+    BTree(const BTree<TKey> &copy);   // copy constructor
     void copyTree(const Node *sourceNode, Node *&targetNode);
+
     void setRoot(const TKey &key); // set root of tree
     Position getRoot() const;      // gives position of root
 
@@ -47,7 +48,7 @@ public:
 
     void print() const; // print tree given its root
 
-    void eulerTour(const Position &pos) const;
+    void eulerTour(const Position &pos) const; // euler tour
     void printExpression() const;
 
     int size() const;
@@ -125,7 +126,6 @@ void BTree<TKey>::eulerTourHelper(const Node *ptr_node) const
     {
         cout << "(" << ptr_node->key << " "; // Visit the node before the left subtree
         eulerTourHelper(ptr_node->ptr_left);
-        cout << ") "; // Visit the node between the left and right subtrees
         eulerTourHelper(ptr_node->ptr_right);
         cout << ") "; // Visit the node after the right subtree
     }
@@ -217,7 +217,7 @@ bool BTree<TKey>::empty() const
 } // empty
 
 template <typename TKey>
-const int BTree<TKey>::SPC = 3; // SPC
+const int BTree<TKey>::SPC = 3; // spacing
 
 template <typename TKey>
 void BTree<TKey>::printTree(const Node *ptr_node, int space) const
