@@ -1,242 +1,336 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
-#include <stack>
 
 using namespace std;
 
-// ----------------- NODE -----------------
-template <typename K, typename V>
-class Node {
+// _____________ NODE _____________
+template <typename tkey, typename tval>
+class Node 
+{
 public:
-    K key;
-    vector<V> values;
+    tkey key;
+    vector<tval> values;
     Node* left;
     Node* right;
 
-    Node(K key, vector<V> values, Node* left = nullptr, Node* right = nullptr);
-};
+    Node(const tkey& key, const tval& value, Node* left = nullptr, Node* right = nullptr);
+};//class Node
 
-template <typename K, typename V>
-Node<K, V>::Node(K key, vector<V> values, Node* left, Node* right)
+template<typename tkey, typename tval>
+Node<tkey, tval>::Node(const tkey& key, const tval& value, Node* left, Node* right) : key(key), values(1, value), left(left), right(right) 
 {
-    this->key = key;
-    this->values = values;
-    this->left = left;
-    this->right = right;
-}
+}//Node parameter constructor
+// _____________ NODE _____________
 
-// ----------------- NODE -----------------
 
-// ----------------- ITERATOR -----------------
-template <typename K, typename V>
-class SortedDictionaryIterator {
+
+// _____________ ITERATOR _____________
+template <typename tkey, typename tval>
+class Iterator 
+{
 private:
-    using Node = Node<K, V>;
-
+    using Node = Node<tkey, tval>;
+    
     Node* current;
-    stack<Node*> nodes;
-
+    vector<Node*> nodes;
+    
 public:
-    SortedDictionaryIterator(Node* root) : current(root) {
-        // Move to the leftmost node
+    Iterator(Node* root);
+    Iterator& operator++();                                     //overloaded increment operator ++
+    pair<const tkey&, const vector<tval>&> operator*() const;   //overloaded dereference operator *
+    bool operator==(const Iterator& other) const;               //overloaded equality operator ==
+    bool operator!=(const Iterator& other) const;               //overloaded inequality operator !=
+};//class Iterator
+
+template <typename tkey, typename tval>
+Iterator<tkey, tval>::Iterator(Node* root)
+{
+    this->current = root;
+    // Move to the leftmost node
+    while (current) {
+        nodes.push_back(current);
+        current = current->left;
+    }
+    // Set current to the leftmost node
+    if (!nodes.empty()) {
+        current = nodes.back();
+        nodes.pop_back();
+    }
+}//Iterator
+
+
+template <typename tkey, typename tval>
+Iterator<tkey, tval>& Iterator<tkey, tval>::operator++() 
+{
+    // Move to the next node in in-order traversal
+    if (current->right) 
+    {
+        current = current->right;
         while (current) {
-            nodes.push(current);
+            nodes.push_back(current);
             current = current->left;
         }
-
-        // Set current to the leftmost node
-        if (!nodes.empty()) {
-            current = nodes.top();
-            nodes.pop();
-        }
+    } 
+    else if (!nodes.empty()) 
+    {
+        current = nodes.back();
+        nodes.pop_back();
+    } 
+    else 
+    {
+        current = nullptr; // End of traversal
     }
+    return *this;
+}//overloaded increment operator ++
 
-    // Overload the pre-increment operator (++iterator)
-    SortedDictionaryIterator& operator++() {
-        // Move to the next node in in-order traversal
-        if (current->right) {
-            current = current->right;
-            while (current) {
-                nodes.push(current);
-                current = current->left;
-            }
-        } else if (!nodes.empty()) {
-            current = nodes.top();
-            nodes.pop();
-        } else {
-            current = nullptr; // End of traversal
-        }
 
-        return *this;
-    }
+template <typename tkey, typename tval>
+pair<const tkey&, const vector<tval>&> Iterator<tkey, tval>::operator*() const 
+{
+    return make_pair(current->key, current->values);
+}//overloaded dereference operator *
 
-    // Overload the dereference operator (*iterator)
-    pair<const K&, vector<V>&> operator*() const {
-        return make_pair(current->key, current->values);
-    }
 
-    // Overload the arrow operator (iterator->)
-    pair<const K&, vector<V>&> operator->() const {
-        return **this;
-    }
+template <typename tkey, typename tval>
+bool Iterator<tkey, tval>::operator==(const Iterator& other) const 
+{
+    return (current == other.current && nodes == other.nodes);
+}//overloaded equality operator ==
 
-    // Overload the equality operator (iterator == iterator)
-    bool operator==(const SortedDictionaryIterator& other) const {
-        return current == other.current;
-    }
 
-    // Overload the inequality operator (iterator != iterator)
-    bool operator!=(const SortedDictionaryIterator& other) const {
-        return !(*this == other);
-    }
-};
+template <typename tkey, typename tval>
+bool Iterator<tkey, tval>::operator!=(const Iterator& other) const 
+{
+    return !(*this == other);
+}//overloaded inequality operator !=
+// _____________ ITERATOR _____________
 
-// ----------------- ITERATOR -----------------
 
-// ----------------- SORTED_DICTIONARY -----------------
-template <typename K, typename V>
-class SortedDictionary {
-    Node<K, V>* root;
+
+// _____________ DICTIONARY _____________
+template <typename tkey, typename tval>
+class Dictionary 
+{
+private:
+    Node<tkey, tval>* root;
+
+    Node<tkey, tval>* insert(Node<tkey, tval>* node, const tkey& key, const tval& value);
+    Node<tkey, tval>* find(Node<tkey, tval>* node, const tkey& key) const;
+    pair<Node<tkey, tval>*, Node<tkey, tval>*> findAll(Node<tkey, tval>* node, const tkey& key);
+    Node<tkey, tval>* erase(Node<tkey, tval>* node, const tkey& key);
+    Node<tkey, tval>* erase(Node<tkey, tval>* node, Node<tkey, tval>* target);
+
+    Node<tkey, tval>* minValueNode(Node<tkey, tval>* node) const;
+    int size(Node<tkey, tval>* node) const;
 
 public:
-    SortedDictionary();
+    Dictionary() : root(nullptr) {}
 
-    // Insert a key-value pair into the tree
-    void insert(const K& key, const V& value);
+    void insert(const tkey& key, const tval& value);
+    Iterator<tkey, tval> find(const tkey& key);
+    pair<Iterator<tkey, tval>, Iterator<tkey, tval>> findAll(const tkey& key);
+    void erase(const tkey& key);
+    void erase(const Iterator<tkey, tval>& position);
 
-    // Find a key in the tree
-    Node<K, V>* find(const K& key);
-
-    // Erase a key from the tree
-    void erase(const K& key);
-
-    // Check if the tree is empty
     bool empty() const;
-
-    // Get the size of the tree
     int size() const;
 
-    using Iterator = SortedDictionaryIterator<K, V>;
+    Iterator<tkey, tval> begin() const;
+    Iterator<tkey, tval> end() const;
+};//class Dictionary
 
-    Iterator begin() const {
-        return Iterator(minValueNode(root));
-    }
-
-    Iterator end() const {
-        return Iterator(nullptr);
-    }
-
-private:
-    Node<K, V>* insert(Node<K, V>* node, const K& key, const V& value);
-
-    Node<K, V>* find(Node<K, V>* node, const K& key);
-
-    Node<K, V>* erase(Node<K, V>* node, const K& key);
-
-    Node<K, V>* minValueNode(Node<K, V>* node) const;
-
-    int size(Node<K, V>* node) const;
-};
-
-// SortedDictionary member functions
-template <typename K, typename V>
-SortedDictionary<K, V>::SortedDictionary(){
-    this->root = nullptr; // Initialize the root of the dictionary to nullptr
-}
-
-template <typename K, typename V>
-void SortedDictionary<K, V>::insert(const K& key, const V& value) {
+template <typename tkey, typename tval>
+void Dictionary<tkey, tval>::insert(const tkey& key, const tval& value) 
+{
     root = insert(root, key, value);
-}
+}//insert
 
-template <typename K, typename V>
-Node<K, V>* SortedDictionary<K, V>::find(const K& key) {
-    return find(root, key);
-}
+template <typename tkey, typename tval>
+Iterator<tkey, tval> Dictionary<tkey, tval>::find(const tkey& key) 
+{
+    Node<tkey, tval>* result = find(root, key);
+    return Iterator<tkey, tval>(result);
+}//find
 
-template <typename K, typename V>
-void SortedDictionary<K, V>::erase(const K& key) {
+template <typename tkey, typename tval>
+pair<Iterator<tkey, tval>, Iterator<tkey, tval>> Dictionary<tkey, tval>::findAll(const tkey& key) 
+{
+    auto result = findAll(root, key);
+    return {Iterator<tkey, tval>(result.first), Iterator<tkey, tval>(result.second)};
+}//findAll
+
+template <typename tkey, typename tval>
+void Dictionary<tkey, tval>::erase(const tkey& key) 
+{
     root = erase(root, key);
-}
+}//erase
 
-template <typename K, typename V>
-bool SortedDictionary<K, V>::empty() const {
+template <typename tkey, typename tval>
+void Dictionary<tkey, tval>::erase(const Iterator<tkey, tval>& position) 
+{
+    root = erase(root, position.current);
+}//erase
+
+template <typename tkey, typename tval>
+bool Dictionary<tkey, tval>::empty() const 
+{
     return root == nullptr;
-}
+}//empty
 
-template <typename K, typename V>
-int SortedDictionary<K, V>::size() const {
+template <typename tkey, typename tval>
+int Dictionary<tkey, tval>::size() const 
+{
     return size(root);
-}
 
-template <typename K, typename V>
-Node<K, V>* SortedDictionary<K, V>::insert(Node<K, V>* node, const K& key, const V& value) {
+}//size
+
+template <typename tkey, typename tval>
+Iterator<tkey, tval> Dictionary<tkey, tval>::begin() const 
+{
+    return Iterator<tkey, tval>(minValueNode(root));
+}//begin
+
+template <typename tkey, typename tval>
+Iterator<tkey, tval> Dictionary<tkey, tval>::end() const 
+{
+    return Iterator<tkey, tval>(nullptr);
+}//end
+
+template <typename tkey, typename tval>
+Node<tkey, tval>* Dictionary<tkey, tval>::insert(Node<tkey, tval>* node, const tkey& key, const tval& value) 
+{
     if (node == nullptr) {
-        return new Node<K, V>{key, {value}, nullptr, nullptr};
-    } else if (key < node->key) {
+        return new Node<tkey, tval>(key, value);
+    } 
+    else if (key < node->key) 
+    {
         node->left = insert(node->left, key, value);
-    } else if (key > node->key) {
+    } 
+    else if (key > node->key) 
+    {
         node->right = insert(node->right, key, value);
-    } else {
+    } 
+    else 
+    {
         node->values.push_back(value);
     }
     return node;
-}
+}//insert
 
-template <typename K, typename V>
-Node<K, V>* SortedDictionary<K, V>::find(Node<K, V>* node, const K& key) {
-    if (node == nullptr || node->key == key) {
+template <typename tkey, typename tval>
+Node<tkey, tval>* Dictionary<tkey, tval>::find(Node<tkey, tval>* node, const tkey& key) const 
+{
+    if (node == nullptr || node->key == key) 
+    {
         return node;
-    } else if (key < node->key) {
+    } 
+    else if (key < node->key) 
+    {
         return find(node->left, key);
-    } else {
+    } 
+    else 
+    {
         return find(node->right, key);
     }
-}
+}//find
 
-template <typename K, typename V>
-Node<K, V>* SortedDictionary<K, V>::erase(Node<K, V>* node, const K& key) {
-    if (node == nullptr) {
+template <typename tkey, typename tval>
+pair<Node<tkey, tval>*, Node<tkey, tval>*> Dictionary<tkey, tval>::findAll(Node<tkey, tval>* node, const tkey& key) 
+{
+    Node<tkey, tval>* first = nullptr;
+    Node<tkey, tval>* last = nullptr;
+
+    while (node) 
+    {
+        if (key < node->key) 
+        {
+            node = node->left;
+        } 
+        else if (key > node->key) 
+        {
+            node = node->right;
+        } 
+        else 
+        {
+            first = last = node;
+            while (last->right && last->right->key == key) 
+            {
+                last = last->right;
+            }
+            break;
+        }
+    }
+
+    return {first, last};
+}//findAll
+
+template <typename tkey, typename tval>
+Node<tkey, tval>* Dictionary<tkey, tval>::erase(Node<tkey, tval>* node, const tkey& key) 
+{
+    if (node == nullptr) 
+    {
         return nullptr;
-    } else if (key < node->key) {
+    } 
+    else if (key < node->key) 
+    {
         node->left = erase(node->left, key);
-    } else if (key > node->key) {
+    } 
+    else if (key > node->key) 
+    {
         node->right = erase(node->right, key);
-    } else {
-        if (node->left == nullptr) {
-            Node<K, V>* temp = node->right;
+    } 
+    else 
+    {
+        if (node->left == nullptr) 
+        {
+            Node<tkey, tval>* temp = node->right;
             delete node;
             return temp;
-        } else if (node->right == nullptr) {
-            Node<K, V>* temp = node->left;
+        } 
+        else if (node->right == nullptr) 
+        {
+            Node<tkey, tval>* temp = node->left;
             delete node;
             return temp;
-        } else {
-            Node<K, V>* temp = minValueNode(node->right);
+        } 
+        else 
+        {
+            Node<tkey, tval>* temp = minValueNode(node->right);
             node->key = temp->key;
             node->values = temp->values;
             node->right = erase(node->right, temp->key);
         }
     }
     return node;
-}
+}//erase by key
 
-template <typename K, typename V>
-Node<K, V>* SortedDictionary<K, V>::minValueNode(Node<K, V>* node) const {
-    Node<K, V>* current = node;
-    while (current && current->left != nullptr) {
+template <typename tkey, typename tval>
+Node<tkey, tval>* Dictionary<tkey, tval>::erase(Node<tkey, tval>* node, Node<tkey, tval>* target) 
+{
+    return erase(node, target->key);
+}//erase by iterator
+
+template <typename tkey, typename tval>
+Node<tkey, tval>* Dictionary<tkey, tval>::minValueNode(Node<tkey, tval>* node) const 
+{
+    Node<tkey, tval>* current = node;
+    while (current && current->left) 
+    {
         current = current->left;
     }
     return current;
-}
+}//minValueNode
 
-template <typename K, typename V>
-int SortedDictionary<K, V>::size(Node<K, V>* node) const {
-    if (node == nullptr) {
+template <typename tkey, typename tval>
+int Dictionary<tkey, tval>::size(Node<tkey, tval>* node) const 
+{
+    if (node == nullptr) 
+    {
         return 0;
-    } else {
+    } 
+    else 
+    {
         return size(node->left) + 1 + size(node->right);
     }
-}
-// ----------------- SORTED_DICTIONARY -----------------
+}//size
+// _____________ DICTIONARY _____________
