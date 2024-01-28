@@ -3,6 +3,8 @@
 
 using namespace std;
 
+
+
 // _____________ NODE _____________
 template <typename tkey, typename tval>
 class Node 
@@ -29,13 +31,13 @@ template <typename tkey, typename tval>
 class Iterator 
 {
 private:
-    using Node = Node<tkey, tval>;
+    using NodeType = Node<tkey, tval>;
     
-    Node* current;
-    vector<Node*> nodes;
+    NodeType* current;
+    vector<NodeType*> nodes;
     
 public:
-    Iterator(Node* root);
+    Iterator(NodeType* root);
     Iterator& operator++();                                     //overloaded increment operator ++
     pair<const tkey&, const vector<tval>&> operator*() const;   //overloaded dereference operator *
     bool operator==(const Iterator& other) const;               //overloaded equality operator ==
@@ -43,7 +45,7 @@ public:
 };//class Iterator
 
 template <typename tkey, typename tval>
-Iterator<tkey, tval>::Iterator(Node* root)
+Iterator<tkey, tval>::Iterator(NodeType* root)
 {
     this->current = root;
     // Move to the leftmost node
@@ -83,20 +85,17 @@ Iterator<tkey, tval>& Iterator<tkey, tval>::operator++()
     return *this;
 }//overloaded increment operator ++
 
-
 template <typename tkey, typename tval>
 pair<const tkey&, const vector<tval>&> Iterator<tkey, tval>::operator*() const 
 {
     return make_pair(current->key, current->values);
 }//overloaded dereference operator *
 
-
 template <typename tkey, typename tval>
 bool Iterator<tkey, tval>::operator==(const Iterator& other) const 
 {
     return (current == other.current && nodes == other.nodes);
 }//overloaded equality operator ==
-
 
 template <typename tkey, typename tval>
 bool Iterator<tkey, tval>::operator!=(const Iterator& other) const 
@@ -124,7 +123,7 @@ private:
     int size(Node<tkey, tval>* node) const;
 
 public:
-    Dictionary() : root(nullptr) {}
+    Dictionary();
 
     void insert(const tkey& key, const tval& value);
     Iterator<tkey, tval> find(const tkey& key);
@@ -138,6 +137,12 @@ public:
     Iterator<tkey, tval> begin() const;
     Iterator<tkey, tval> end() const;
 };//class Dictionary
+
+template <typename tkey, typename tval>
+Dictionary<tkey, tval>::Dictionary()
+{
+    this->root = nullptr;
+}
 
 template <typename tkey, typename tval>
 void Dictionary<tkey, tval>::insert(const tkey& key, const tval& value) 
@@ -199,18 +204,19 @@ Iterator<tkey, tval> Dictionary<tkey, tval>::end() const
 template <typename tkey, typename tval>
 Node<tkey, tval>* Dictionary<tkey, tval>::insert(Node<tkey, tval>* node, const tkey& key, const tval& value) 
 {
-    if (node == nullptr) {
+    if (node == nullptr) //if its empty, create a new node
+    {
         return new Node<tkey, tval>(key, value);
     } 
-    else if (key < node->key) 
+    else if (key < node->key) //its its less than the current left node's key, recursivly insert into left subtree
     {
         node->left = insert(node->left, key, value);
     } 
-    else if (key > node->key) 
+    else if (key > node->key) //its its less than the current right node's key, recursivly insert into right subtree
     {
         node->right = insert(node->right, key, value);
     } 
-    else 
+    else //key already exists, adding another value to it
     {
         node->values.push_back(value);
     }
@@ -220,15 +226,15 @@ Node<tkey, tval>* Dictionary<tkey, tval>::insert(Node<tkey, tval>* node, const t
 template <typename tkey, typename tval>
 Node<tkey, tval>* Dictionary<tkey, tval>::find(Node<tkey, tval>* node, const tkey& key) const 
 {
-    if (node == nullptr || node->key == key) 
+    if (node == nullptr || node->key == key) //return node if its found or its null (not found)
     {
         return node;
     } 
-    else if (key < node->key) 
+    else if (key < node->key) //recursivly enter left subtree to get closer to the key looked for
     {
         return find(node->left, key);
     } 
-    else 
+    else //recursivly enter right subtree to get closer to the key looked for
     {
         return find(node->right, key);
     }
@@ -237,27 +243,27 @@ Node<tkey, tval>* Dictionary<tkey, tval>::find(Node<tkey, tval>* node, const tke
 template <typename tkey, typename tval>
 pair<Node<tkey, tval>*, Node<tkey, tval>*> Dictionary<tkey, tval>::findAll(Node<tkey, tval>* node, const tkey& key) 
 {
-    Node<tkey, tval>* first = nullptr;
-    Node<tkey, tval>* last = nullptr;
+    Node<tkey, tval>* first = nullptr;//ptr to first node with the specified key
+    Node<tkey, tval>* last = nullptr;//ptr to last node with the specified key
 
     while (node) 
     {
-        if (key < node->key) 
+        if (key < node->key) //enter left subtree if key is less than current node's key
         {
             node = node->left;
         } 
-        else if (key > node->key) 
+        else if (key > node->key) //enter right subtree if key is greater than current node's key
         {
             node = node->right;
         } 
-        else 
+        else //key is equal to current node's key
         {
-            first = last = node;
+            first = last = node;//finding the range
             while (last->right && last->right->key == key) 
             {
                 last = last->right;
             }
-            break;
+            break;//break when range has been found
         }
     }
 
@@ -267,35 +273,35 @@ pair<Node<tkey, tval>*, Node<tkey, tval>*> Dictionary<tkey, tval>::findAll(Node<
 template <typename tkey, typename tval>
 Node<tkey, tval>* Dictionary<tkey, tval>::erase(Node<tkey, tval>* node, const tkey& key) 
 {
-    if (node == nullptr) 
+    if (node == nullptr) // nothing to erase
     {
         return nullptr;
     } 
-    else if (key < node->key) 
+    else if (key < node->key) // node is in the left subtree
     {
         node->left = erase(node->left, key);
     } 
-    else if (key > node->key) 
+    else if (key > node->key) // node is in the right subtree
     {
         node->right = erase(node->right, key);
     } 
-    else 
+    else // found key
     {
-        if (node->left == nullptr) 
+        if (node->left == nullptr) // node only has one child
         {
             Node<tkey, tval>* temp = node->right;
             delete node;
             return temp;
         } 
-        else if (node->right == nullptr) 
+        else if (node->right == nullptr) // node only has one child
         {
             Node<tkey, tval>* temp = node->left;
             delete node;
             return temp;
         } 
-        else 
+        else // node has two children, erase smallest node in right subtree
         {
-            Node<tkey, tval>* temp = minValueNode(node->right);
+            Node<tkey, tval>* temp = minValueNode(node->right); 
             node->key = temp->key;
             node->values = temp->values;
             node->right = erase(node->right, temp->key);
@@ -328,7 +334,7 @@ int Dictionary<tkey, tval>::size(Node<tkey, tval>* node) const
     {
         return 0;
     } 
-    else 
+    else
     {
         return size(node->left) + 1 + size(node->right);
     }
