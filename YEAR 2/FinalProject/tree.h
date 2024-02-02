@@ -6,17 +6,17 @@ using namespace std;
 #include <vector>
 // ________ Node ________
 template <typename T>
-class Node 
-{
+class Node {
 public:
-    Node(T data);
-    void dataAppend(T data);
-    T data;
-    vector<T> list_data; // 1, 2 or 3
-    int nrChildren;           // 2, 3 or 4
-    Node<T>* parent;
+    Node();
+    void insert(T value);
+    void split(Node<T>* new_node);
+    void printTree(int depth);
+
+private:
+    vector<T> values;
     vector<Node<T>*> children;
-    
+    Node<T>* parent;
 };//Class Node
 
 template <typename T>

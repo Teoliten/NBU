@@ -1,3 +1,3 @@
-t.insert(40);
-    t.insert(50);
-    t.insert(60);
+  // t.insert(20);
+    // t.insert(30);
+    // t.insert(40);
