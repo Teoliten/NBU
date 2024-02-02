@@ -1,3 +1,2 @@
-  // t.insert(20);
-    // t.insert(30);
-    // t.insert(40);
+t.insert(3);
+    t.insert(4);
