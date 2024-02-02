@@ -20,12 +20,16 @@ public:
 };//Class Node
 
 template <typename T>
-Node<T>::Node(T data) : data(data), nrChildren(2), parent(nullptr) 
-{    
-}//Parameter constructor
+Node<T>::Node(T data) : data(data), nrChildren(2), parent(nullptr)
+{
+    cout << "Node constructed" << endl;
+    list_data.push_back(data);
+}// Parameter constructor
+
 
 template <typename T>
 void Node<T>::dataAppend(T data) {
+    cout << "dataAppend" << endl;
     list_data.push_back(data);
 }//dataAppend
 // ________ Node ________
@@ -54,6 +58,7 @@ private:
 template <typename T>
 Tree<T>::Tree()
 {
+    cout << "treeConstructor" << endl;
     root = nullptr;
     size = 0;
 }//Tree
@@ -62,6 +67,7 @@ Tree<T>::Tree()
 template <typename T>
 void Tree<T>::insert(T value)
 {
+    cout << "insert" << endl;
     if (root == nullptr) // Empty tree
     {
         Node<T>* new_node = new Node<T>(value);
@@ -78,6 +84,8 @@ void Tree<T>::insert(T value)
 template <typename T>
 void Tree<T>::insert(Node<T>* node, T value)
 {
+    cout << "insertHelper" << endl;
+
     if (node->children.empty()) // Check if the current node is a leaf
     {
         if (node->list_data.size() < 3)
@@ -105,31 +113,53 @@ void Tree<T>::insert(Node<T>* node, T value)
     }
 }
 
+
 template <typename T>
 void Tree<T>::split(Node<T>* parent, Node<T>* new_node)
 {
-    // Split a full node into two and insert the new node
+    // Create a new parent node
+    Node<T>* new_parent = new Node<T>(parent->list_data[1]);
+    cout << "Splitting node with data: ";
+    for (const T& data : parent->list_data)
+        cout << data << " ";
+    cout << endl;
 
-    // Assuming here that the parent node is not full
-    parent->dataAppend(new_node->list_data[0]);
+    // Update the new parent's children
+    new_parent->children.push_back(parent);
+    new_parent->children.push_back(new_node);
 
-    // Split the new_node's children between parent and new_node
-    parent->children.push_back(new_node->children[0]);
-    parent->children.push_back(new_node->children[1]);
+    // Remove the split children from the parent
+    parent->children.erase(parent->children.begin(), parent->children.begin() + 2);
 
-    // Remove the split children from new_node
-    new_node->children.erase(new_node->children.begin(), new_node->children.begin() + 2);
+    // Update list_data of the parent
+    parent->list_data.resize(1);
 
-    // Update list_data of new_node
-    new_node->list_data.erase(new_node->list_data.begin(), new_node->list_data.begin() + 1);
+    // Update the parent of the split nodes
+    parent->parent = new_parent;
+    new_node->parent = new_parent;
 
-    // Insert new_node as a child of parent
-    int i = 0;
-    while (i < parent->list_data.size() && new_node->list_data[0] > parent->list_data[i])
+    cout << "Creating new parent with data: " << new_node->list_data[0] << endl;
+
+    // Print information about the children of the new parent
+    cout << "Children of new parent: ";
+    for (Node<T>* child : new_parent->children)
     {
-        i++;
+        if (child != nullptr)
+            cout << "[" << child->list_data[0] << "] ";
     }
-    parent->children.insert(parent->children.begin() + i, new_node);
+    cout << endl;
+
+    // If the parent is the root, update the root
+    if (parent == root)
+    {
+        root = new_parent;
+        cout << "Updating root" << endl;
+    }
+    else
+    {
+        // Insert the new parent into the grandparent
+        split(parent->parent, new_parent);
+    }
 }
 
 
@@ -137,19 +167,21 @@ void Tree<T>::split(Node<T>* parent, Node<T>* new_node)
 template <typename T>
 void Tree<T>::deleteVal(int value)
 {
+    cout << "delete val: " << value << endl;
     // Implementation of delete method
 }
 
 template <typename T>
 Node<T>* find(T val)
 {
-
+cout << "find: " << val << endl;
 }
 
 
 template <typename T>
 void Tree<T>::printTree()
 {
+    cout << "print" << endl;
     printTree(root, 0);
 }
 
@@ -159,7 +191,15 @@ void Tree<T>::printTree(Node<T>* node, int depth)
     // Print the data in the current node
     for (int i = 0; i < depth; i++)
         cout << "  ";
-    cout << node->data << endl;
+
+    cout << "[";
+    for (size_t i = 0; i < node->list_data.size(); i++)
+    {
+        cout << node->list_data[i];
+        if (i < node->list_data.size() - 1)
+            cout << ", ";
+    }
+    cout << "]" << endl;
 
     // Recursively print the children of the current node
     for (Node<T>* child : node->children)
