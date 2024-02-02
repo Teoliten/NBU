@@ -1,2 +1,1 @@
-t.insert(3);
-    t.insert(4);
+t.insert(4);

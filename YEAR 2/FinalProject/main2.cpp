@@ -7,11 +7,18 @@ using namespace std;
 int main() {
     Tree<int> t;
 
-    t.insert(1);
-    t.insert(2);
-    // t.insert(3);
-    // t.insert(4);
+    t.insert(10);
+    t.insert(20);
+    t.insert(30);
+    t.insert(40);
+    t.insert(50);
+    t.insert(60);
+    t.insert(70);
+    t.insert(80);
+    // t.insert(90);
+    // t.insert(100);
 
+    t.print();
 
     return 0;
 }
