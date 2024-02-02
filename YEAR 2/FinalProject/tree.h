@@ -119,41 +119,23 @@ void Tree<T>::split(Node<T>* parent, Node<T>* new_node)
 {
     // Create a new parent node
     Node<T>* new_parent = new Node<T>(parent->list_data[1]);
-    cout << "Splitting node with data: ";
-    for (const T& data : parent->list_data)
-        cout << data << " ";
-    cout << endl;
 
-    // Update the new parent's children
+    // Move the split data to the new parent
+    new_parent->list_data.push_back(parent->list_data[1]);
+    parent->list_data.pop_back();
+
+    // Move the children to the new parent
     new_parent->children.push_back(parent);
     new_parent->children.push_back(new_node);
-
-    // Remove the split children from the parent
-    parent->children.erase(parent->children.begin(), parent->children.begin() + 2);
-
-    // Update list_data of the parent
-    parent->list_data.resize(1);
 
     // Update the parent of the split nodes
     parent->parent = new_parent;
     new_node->parent = new_parent;
 
-    cout << "Creating new parent with data: " << new_node->list_data[0] << endl;
-
-    // Print information about the children of the new parent
-    cout << "Children of new parent: ";
-    for (Node<T>* child : new_parent->children)
-    {
-        if (child != nullptr)
-            cout << "[" << child->list_data[0] << "] ";
-    }
-    cout << endl;
-
     // If the parent is the root, update the root
     if (parent == root)
     {
         root = new_parent;
-        cout << "Updating root" << endl;
     }
     else
     {
@@ -161,6 +143,9 @@ void Tree<T>::split(Node<T>* parent, Node<T>* new_node)
         split(parent->parent, new_parent);
     }
 }
+
+
+
 
 
 
@@ -192,7 +177,7 @@ void Tree<T>::printTree(Node<T>* node, int depth)
     for (int i = 0; i < depth; i++)
         cout << "  ";
 
-    cout << "[";
+    cout << "Node with data: [";
     for (size_t i = 0; i < node->list_data.size(); i++)
     {
         cout << node->list_data[i];
@@ -205,6 +190,7 @@ void Tree<T>::printTree(Node<T>* node, int depth)
     for (Node<T>* child : node->children)
         printTree(child, depth + 1);
 }
+
 
 // ________ Tree ________
 #endif
