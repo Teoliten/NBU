@@ -15,6 +15,15 @@ int main() {
     t.insert(60);
     t.insert(70);
     t.insert(80);
+
+    t.insert(15);
+    t.insert(25);
+
+    t.insert(16);
+    t.insert(17);
+
+    // t.insert(16);
+    // t.insert(17);
     // t.insert(90);
     // t.insert(100);
 

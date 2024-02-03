@@ -14,15 +14,18 @@ class Node
 public:
     Node(T data);
     bool containingData(T data);
+    int nrValues();
 
     T val1;
     T val2;
     T val3;
+    T val4; // temporary storage
 
     Node* chld1;
     Node* chld2;
     Node* chld3;
     Node* chld4;
+    Node* chld5; //temporary pointer
 
 private:
     
@@ -34,14 +37,38 @@ Node<T>::Node(T data)
     val1 = data;
     val2 = 0;
     val3 = 0;
+    val4 = 0;
 
-    chld1 = chld2 = chld3 = chld4 = nullptr;
+    chld1 = chld2 = chld3 = chld4 = chld5 = nullptr;
 }
 
 template <typename T>
 bool Node<T>::containingData(T data)
 {
-    return (val1 == data || val2 == data || val3 == data);
+    return (val1 == data || val2 == data || val3 == data || val4 == data);//val4?
+}
+
+template <typename T>
+int Node<T>::nrValues()
+{
+    int result = 0;
+    if(val1 != 0)
+    {
+        result++;
+    }
+    if(val2 != 0)
+    {
+        result++;
+    }
+    if(val3 != 0)
+    {
+        result++;
+    }
+    if(val4 != 0)
+    {
+        result++;
+    }
+    return result;
 }
 // __________ Node __________
 
@@ -53,16 +80,18 @@ public:
     Tree();
     void insert(T data);
     void print();
-    Node<T>* search(T value);
+    Node<T>* find(T value);
+    Node<T>* search(T value); //searching for node to put value into
+    void balance(Node<T>* node);//after inserting
     
-
 private:
     Node<T>* root;
 
     void insertRecursive(Node<T>* currentNode, T data);
-    void insertIntoNode(Node<T>* node, T data);
+    bool insertIntoNode(Node<T>* node, T data);
     void splitNode(Node<T>* node);
     Node<T>* getParent(Node<T>* current, Node<T>* child);
+    Node<T>* findRecursive(Node<T>* currentNode, T value);
     Node<T>* searchRecursive(Node<T>* currentNode, T value);
     
     void inOrderTraversal(Node<T>* currentNode, int depth);
@@ -81,12 +110,119 @@ void Tree<T>::insert(T data)
     {
         root = new Node<T>(data);
     }
-    else
+    else 
     {
-        // Call a recursive function to handle insertion
-        insertRecursive(root, data);
+        Node<T>* leafNode = search(data);
+        bool nodeOverflow = insertIntoNode(leafNode, data);
+        if(nodeOverflow)
+        {
+            balance(leafNode);
+        }
     }
 }//insert
+
+template <typename T>
+void Tree<T>::balance(Node<T>* node)
+{
+    cout << "BALACING" << endl;
+    if(node == root)
+    {
+        //create the new nodes for splitting into
+        Node<T>* newRoot = new Node<T>(node->val3);
+        Node<T>* newNode = new Node<T>(node->val4);
+
+        //set the new roots children
+        newRoot->chld1 = node;
+        newRoot->chld2 = newNode;
+
+        //get pointers to newNode from node
+        newNode->chld1 = node->chld4;
+        newNode->chld2 = node->chld5;
+
+        //ptrs given to newNode, set old to null
+        node->chld4 = nullptr;
+        node->chld5 = nullptr;
+
+        //values given to newNode, empty now
+        node->val3 = 0;
+        node->val4 = 0;
+
+        //update root
+        root = newRoot;
+    }
+    else
+    {
+        Node<T>* parent = getParent(root, node);//get parent node
+        
+        
+        //get what child we are in from parent
+        bool inChld1 = false, inChld2 = false, inChld3 = false, inChld4 = false;
+        if(parent->chld1 != nullptr)
+        {
+            inChld1 = parent->chld1->containingData(node->val3);
+        }
+        if(parent->chld2 != nullptr)
+        {
+            inChld2 = parent->chld2->containingData(node->val3);
+        }
+        if(parent->chld3 != nullptr)
+        {
+            inChld3 = parent->chld3->containingData(node->val3);
+        }
+        if(parent->chld4 != nullptr)
+        {
+            inChld4 = parent->chld4->containingData(node->val3);
+        }
+        
+        insertIntoNode(parent, node->val3); // insert 0 0 z 0 into parent node
+
+        Node<T>* newNode = new Node<T>(0);
+        newNode->val1 = node->val4;
+        node->val3 = 0;
+        node->val4 = 0;
+
+        if(inChld1)// we know val3 went into pos 1 of parent
+        {
+            parent->chld5 = parent->chld4;
+            parent->chld4 = parent->chld3;
+            parent->chld3 = parent->chld2;
+            parent->chld2 = newNode;
+            parent->chld1 = node;
+        }
+        if(inChld2)// we know val3 went into pos 2 of parent
+        {
+            parent->chld5 = parent->chld4;
+            parent->chld4 = parent->chld3;
+            parent->chld3 = newNode;
+            parent->chld2 = node;
+            //chld1 remains the same
+        }
+        if(inChld3)// we know val3 went into pos 3 of parent
+        {
+            
+        }
+        if(inChld4)// we know val3 went into pos 4 of parent
+        {
+            
+        }
+
+        // Node<T>* fixChildren = find(node->val3);
+        
+        
+
+        //val in parent's left child is node
+        //val in parent's right child is newNode
+        // node x y 0 0
+        // newNode 0 0 0 k
+
+        int valuesInParent = (parent->nrValues());//how many values in parent
+        // Check if the parent has overflowed and balance if needed
+        if (valuesInParent == 4)
+        {
+            balance(parent);
+        }
+    }
+}//balance
 
 template <typename T>
 void Tree<T>::insertRecursive(Node<T>* currentNode, T data)
@@ -123,15 +259,16 @@ void Tree<T>::insertRecursive(Node<T>* currentNode, T data)
             insertRecursive(currentNode->chld4, data);
         }
     }
-}
+}//insertRecursive NOT USED
 
 template <typename T>
-void Tree<T>::insertIntoNode(Node<T>* node, T data)
+bool Tree<T>::insertIntoNode(Node<T>* node, T data)
 {
     // Insert data into the node and sort the values
-    if (node->val1 == 0)
+    if (node->val1 == 0)//should never happen
     {
         node->val1 = data;
+        
     }
     else if (node->val2 == 0)
     {
@@ -153,30 +290,25 @@ void Tree<T>::insertIntoNode(Node<T>* node, T data)
             swap(node->val1, node->val2);
         }
     }
-    else
+    else if (node->val4 == 0)
     {
-        // Node is full, split it and insert into the appropriate split node
-        splitNode(node);
-
-        // After splitting, find the correct child to insert the data
-        if (data < node->val1)
+        node->val4 = data;
+        if (node->val4 < node->val3)
         {
-            insertIntoNode(node->chld1, data);
+            swap(node->val3, node->val4);
         }
-        else if (data > node->val1 && (node->val2 == 0 || data < node->val2))
+        if (node->val3 < node->val2)
         {
-            insertIntoNode(node->chld2, data);
+            swap(node->val2, node->val3);
         }
-        else if (node->val2 != 0 && data > node->val2 && (node->val3 == 0 || data < node->val3))
+        if (node->val2 < node->val1)
         {
-            insertIntoNode(node->chld3, data);
+            swap(node->val1, node->val2);
         }
-        else if (node->val3 != 0 && data > node->val3)
-        {
-            insertIntoNode(node->chld4, data);
-        }
+        return true;
     }
-}
+    return false;
+}//insertIntoNode
 
 
 template <typename T>
@@ -230,14 +362,49 @@ void Tree<T>::splitNode(Node<T>* node)
         // Reset val2 for the original node
         node->val2 = 0;
     }
-}
+}//splitNode NOT USED
+
+template <typename T>
+Node<T>* Tree<T>::find(T value)
+{
+    // Call a recursive function to handle find
+    return findRecursive(root, value);
+}//find
+
+template <typename T>
+Node<T>* Tree<T>::findRecursive(Node<T>* currentNode, T value)
+{
+    if (currentNode == nullptr)
+        return nullptr;
+
+    if (currentNode->containingData(value))
+        return currentNode;
+
+    // Find the appropriate child to traverse
+    if (value < currentNode->val1)
+    {
+        return findRecursive(currentNode->chld1, value);
+    }
+    else if ((currentNode->val2 == 0 && value > currentNode->val1) || (currentNode->val2 != 0 && value < currentNode->val2))
+    {
+        return findRecursive(currentNode->chld2, value);
+    }
+    else if ((currentNode->val3 == 0 && value > currentNode->val2) || (currentNode->val3 != 0 && value < currentNode->val3))
+    {
+        return findRecursive(currentNode->chld3, value);
+    }
+    else
+    {
+        return findRecursive(currentNode->chld4, value);
+    }
+}//findRecursive
 
 template <typename T>
 Node<T>* Tree<T>::search(T value)
 {
     // Call a recursive function to handle search
     return searchRecursive(root, value);
-}
+}//search
 
 template <typename T>
 Node<T>* Tree<T>::searchRecursive(Node<T>* currentNode, T value)
@@ -245,8 +412,11 @@ Node<T>* Tree<T>::searchRecursive(Node<T>* currentNode, T value)
     if (currentNode == nullptr)
         return nullptr;
 
-    if (currentNode->containingData(value))
+    // If the current node is a leaf or contains the data, return it
+    if (currentNode->chld1 == nullptr && currentNode->chld2 == nullptr && currentNode->chld3 == nullptr && currentNode->chld4 == nullptr)
+    {
         return currentNode;
+    }
 
     // Find the appropriate child to traverse
     if (value < currentNode->val1)
@@ -265,7 +435,8 @@ Node<T>* Tree<T>::searchRecursive(Node<T>* currentNode, T value)
     {
         return searchRecursive(currentNode->chld4, value);
     }
-}
+}//searchRecursive
+
 
 template <typename T>
 Node<T>* Tree<T>::getParent(Node<T>* current, Node<T>* child)
@@ -294,7 +465,7 @@ Node<T>* Tree<T>::getParent(Node<T>* current, Node<T>* child)
             return getParent(current->chld4, child);
         }
     }
-}
+}//getParent
 
 template <typename T>
 void Tree<T>::print()
@@ -321,6 +492,8 @@ void Tree<T>::inOrderTraversal(Node<T>* currentNode, int depth)
             cout << ", " << currentNode->val2;
         if (currentNode->val3 != 0)
             cout << ", " << currentNode->val3;
+        if (currentNode->val4 != 0)
+            cout << ", " << currentNode->val4;
         cout << "]" << endl;
 
         // Traverse the middle and right subtrees
