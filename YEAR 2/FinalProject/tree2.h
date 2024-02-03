@@ -15,6 +15,7 @@ public:
     Node(T data);
     bool containingData(T data);
     int nrValues();
+    bool isLeaf();
 
     T val1;
     T val2;
@@ -26,9 +27,6 @@ public:
     Node* chld3;
     Node* chld4;
     Node* chld5; //temporary pointer
-
-private:
-    
 };
 
 template <typename T>
@@ -70,6 +68,12 @@ int Node<T>::nrValues()
     }
     return result;
 }
+
+template <typename T>
+bool Node<T>::isLeaf()
+{
+    return(chld1 == nullptr && chld2 == nullptr && chld3 == nullptr && chld4 == nullptr && chld5 == nullptr);
+}
 // __________ Node __________
 
 // __________ Tree __________
@@ -83,17 +87,14 @@ public:
     Node<T>* find(T value);
     Node<T>* search(T value); //searching for node to put value into
     void balance(Node<T>* node);//after inserting
+    void deleteVal(T value);
     
 private:
     Node<T>* root;
-
-    void insertRecursive(Node<T>* currentNode, T data);
     bool insertIntoNode(Node<T>* node, T data);
-    void splitNode(Node<T>* node);
     Node<T>* getParent(Node<T>* current, Node<T>* child);
     Node<T>* findRecursive(Node<T>* currentNode, T value);
     Node<T>* searchRecursive(Node<T>* currentNode, T value);
-    
     void inOrderTraversal(Node<T>* currentNode, int depth);
 };
 
@@ -124,7 +125,7 @@ void Tree<T>::insert(T data)
 template <typename T>
 void Tree<T>::balance(Node<T>* node)
 {
-    cout << "BALACING" << endl;
+    // cout << "BALANCING" << endl;
     if(node == root)
     {
         //create the new nodes for splitting into
@@ -220,59 +221,20 @@ void Tree<T>::balance(Node<T>* node)
         //update children of the new right node
         newNode->chld1 = node->chld4;//When balacing a node thats not a leaf node, need to keep the child pointers from the old node
         newNode->chld2 = node->chld5;
-      
-        
 
         //val in parent's left child is node
         //val in parent's right child is newNode
         // node x y 0 0
         // newNode 0 0 0 k
 
-        int valuesInParent = (parent->nrValues());//how many values in parent
-        // Check if the parent has overflowed and balance if needed
-        if (valuesInParent == 4)
+        int valuesInParent = (parent->nrValues());
+        
+        if (valuesInParent == 4)// balance in parent is overflown
         {
             balance(parent);
         }
     }
 }//balance
-
-template <typename T>
-void Tree<T>::insertRecursive(Node<T>* currentNode, T data)
-{
-    // If the current node is a 3-node, split it
-    if (currentNode->val2 != 0 && currentNode->val3 != 0)
-    {
-        splitNode(currentNode);
-        currentNode = root;
-    }
-
-    // If the current node is a leaf, insert the data
-    if (currentNode->chld1 == nullptr && currentNode->chld2 == nullptr && currentNode->chld3 == nullptr && currentNode->chld4 == nullptr)
-    {
-        insertIntoNode(currentNode, data);
-    }
-    else
-    {
-        // Determine the appropriate child to traverse
-        if (data < currentNode->val1)
-        {
-            insertRecursive(currentNode->chld1, data);
-        }
-        else if ((currentNode->val2 == 0 && data > currentNode->val1) || (currentNode->val2 != 0 && data < currentNode->val2))
-        {
-            insertRecursive(currentNode->chld2, data);
-        }
-        else if ((currentNode->val3 == 0 && data > currentNode->val2) || (currentNode->val3 != 0 && data < currentNode->val3))
-        {
-            insertRecursive(currentNode->chld3, data);
-        }
-        else
-        {
-            insertRecursive(currentNode->chld4, data);
-        }
-    }
-}//insertRecursive NOT USED
 
 template <typename T>
 bool Tree<T>::insertIntoNode(Node<T>* node, T data)
@@ -322,60 +284,6 @@ bool Tree<T>::insertIntoNode(Node<T>* node, T data)
     }
     return false;
 }//insertIntoNode
-
-
-template <typename T>
-void Tree<T>::splitNode(Node<T>* node)
-{
-    // Create a new node and redistribute values
-    Node<T>* newNode = new Node<T>(0);
-
-    newNode->val1 = node->val3;
-    node->val3 = 0;  // Reset val3 for the original node
-
-    if (node->chld3 != nullptr)
-    {
-        newNode->chld1 = node->chld3;
-        node->chld3 = nullptr;
-        newNode->chld1->chld4 = nullptr;
-    }
-
-    // If the current node is not the root, propagate the middle value to the parent
-    if (node != root)
-    {
-        insertIntoNode(getParent(root, node), node->val2);
-        node->val2 = 0;  // Reset val2 for the original node
-    }
-
-    // Connect the new node to the parent
-    if (node == root)
-    {
-        
-        Node<T>* newChild = new Node<T>(0);
-        newChild->val1 = root->val1;
-        root->val1 = root->val2;
-        root->val2 = 0;
-        root->chld1 = newChild;
-        root->chld2 = newNode;
-    }
-    else
-    {
-        Node<T>* parent = getParent(root, node);
-        if (parent->val2 == 0)
-        {
-            parent->val2 = node->val2;
-            parent->chld2 = newNode;
-        }
-        else
-        {
-            parent->val3 = node->val2;
-            parent->chld3 = newNode;
-        }
-
-        // Reset val2 for the original node
-        node->val2 = 0;
-    }
-}//splitNode NOT USED
 
 template <typename T>
 Node<T>* Tree<T>::find(T value)
@@ -450,7 +358,6 @@ Node<T>* Tree<T>::searchRecursive(Node<T>* currentNode, T value)
     }
 }//searchRecursive
 
-
 template <typename T>
 Node<T>* Tree<T>::getParent(Node<T>* current, Node<T>* child)
 {
@@ -492,12 +399,17 @@ void Tree<T>::inOrderTraversal(Node<T>* currentNode, int depth)
 {
     if (currentNode != nullptr)
     {
-        // Traverse the left subtree
-        inOrderTraversal(currentNode->chld1, depth + 1);
+        // Traverse the right subtree
+        inOrderTraversal(currentNode->chld4, depth + 1);
 
-        // Print the values of the current node with depth
-        for (int i = 0; i < depth+1; ++i) {
-            cout << "0";
+        // Print the values of the current node with indentation based on depth
+        for (int i = 0; i < depth; ++i) {
+            cout << "   ";  // Adjust the number of spaces for indentation
+        }
+
+        if(depth == 0)
+        {
+            cout << "Root: ";
         }
 
         cout << "[" << currentNode->val1;
@@ -509,12 +421,13 @@ void Tree<T>::inOrderTraversal(Node<T>* currentNode, int depth)
             cout << ", " << currentNode->val4;
         cout << "]" << endl;
 
-        // Traverse the middle and right subtrees
+        // Traverse the left and middle subtrees
+        inOrderTraversal(currentNode->chld1, depth + 1);
         inOrderTraversal(currentNode->chld2, depth + 1);
         inOrderTraversal(currentNode->chld3, depth + 1);
-        inOrderTraversal(currentNode->chld4, depth + 1);
     }
 }
+
 
 
 #endif
