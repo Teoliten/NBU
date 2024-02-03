@@ -21,11 +21,16 @@ int main() {
 
     t.insert(16);
     t.insert(17);
+    t.insert(90);
 
-    // t.insert(16);
-    // t.insert(17);
-    // t.insert(90);
-    // t.insert(100);
+    t.insert(100);
+
+    t.insert(24);
+    t.insert(26);
+    t.insert(22);
+    t.insert(99);
+    t.insert(12);
+    t.insert(1);
 
     t.print();
 

@@ -199,15 +199,28 @@ void Tree<T>::balance(Node<T>* node)
         }
         if(inChld3)// we know val3 went into pos 3 of parent
         {
-            
+            parent->chld5 = parent->chld4;
+            parent->chld4 = newNode;
+            parent->chld3 = node;
+            //chld2 remains the same
+            //chld1 remains the same
         }
         if(inChld4)// we know val3 went into pos 4 of parent
         {
-            
+            parent->chld5 = newNode;
+            parent->chld4 = node;
+            //chld3 remains the same
+            //chld2 remains the same
+            //chld1 remains the same
         }
 
-        // Node<T>* fixChildren = find(node->val3);
-        
+        // ASDASDASDASNode<T>* fixChildren = find(node->val3);
+
+
+        //update children of the new right node
+        newNode->chld1 = node->chld4;//When balacing a node thats not a leaf node, need to keep the child pointers from the old node
+        newNode->chld2 = node->chld5;
+      
         
 
         //val in parent's left child is node
