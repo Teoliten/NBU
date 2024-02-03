@@ -400,13 +400,13 @@ template <typename T>
 Node<T> *Tree<T>::getParent(Node<T> *current, Node<T> *child)
 {
     // Find the parent of a node in the tree
-    if (current->chld1 == child || current->chld2 == child || current->chld3 == child || current->chld4 == child)
+    if (current->chld1 == child || current->chld2 == child || current->chld3 == child || current->chld4 == child) // parent node found
     {
         return current;
     }
     else
     {
-        if (child->val1 < current->val1)
+        if (child->val1 < current->val1) // recursivly enter tree until node has the value in one of its child nodes
         {
             return getParent(current->chld1, child);
         }
@@ -443,12 +443,12 @@ void Tree<T>::inOrderTraversal(Node<T> *currentNode, int depth)
         // Print the values of the current node with indentation based on depth
         for (int i = 0; i < depth; ++i)
         {
-            cout << "   "; // Adjust the number of spaces for indentation
+            cout << "   ";
         }
 
         if (depth == 0)
         {
-            cout << "Root: ";
+            cout << "R:"; // display root node
         }
 
         cout << "[" << currentNode->val1;
