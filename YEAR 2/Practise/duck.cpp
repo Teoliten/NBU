@@ -40,7 +40,7 @@ int main()
 
     for (int i = 0; i < num; i++)
     {
-        cin >> input;
+        cin >> input;//
         maze[i] = input;
         if (input == 0)
         {
