@@ -27,7 +27,8 @@ public:
     Node *chld3;
     Node *chld4;
     Node *chld5; // temporary pointer
-};
+
+}; // class Node
 
 template <typename T>
 Node<T>::Node(T data)
@@ -38,13 +39,13 @@ Node<T>::Node(T data)
     val4 = 0;
 
     chld1 = chld2 = chld3 = chld4 = chld5 = nullptr;
-}
+} // Node
 
 template <typename T>
 bool Node<T>::containingData(T data)
 {
     return (val1 == data || val2 == data || val3 == data || val4 == data); // val4?
-}
+} // containingData
 
 template <typename T>
 int Node<T>::nrValues()
@@ -67,13 +68,13 @@ int Node<T>::nrValues()
         result++;
     }
     return result;
-}
+} // nrValues
 
 template <typename T>
 bool Node<T>::isLeaf()
 {
     return (chld1 == nullptr && chld2 == nullptr && chld3 == nullptr && chld4 == nullptr && chld5 == nullptr);
-}
+} // isLeaf
 // __________ Node __________
 
 // __________ Tree __________
@@ -81,22 +82,23 @@ template <typename T>
 class Tree
 {
 public:
-    Tree();
-    void insert(T data);
-    void print();
-    Node<T> *find(T value);
-    Node<T> *search(T value);    // searching for node to put value into
-    void balance(Node<T> *node); // after inserting
-    void deleteVal(T value);
+    Tree();                      // default constructor
+    void insert(T data);         // insert given data into tree
+    void print();                // print tree
+    Node<T> *find(T value);      // look for given value within the tree
+    Node<T> *search(T value);    // searching for leaf node to put value into
+    void balance(Node<T> *node); // balance out and split overflown nodes after inserting
+    void deleteVal(T value);     // delete given value if it exists within the tree
 
 private:
-    Node<T> *root;
-    bool insertIntoNode(Node<T> *node, T data);
-    Node<T> *getParent(Node<T> *current, Node<T> *child);
-    Node<T> *findRecursive(Node<T> *currentNode, T value);
-    Node<T> *searchRecursive(Node<T> *currentNode, T value);
-    void inOrderTraversal(Node<T> *currentNode, int depth);
-};
+    Node<T> *root;                                           // pointer to root of the tree
+    bool insertIntoNode(Node<T> *node, T data);              // insert value given the node
+    Node<T> *getParent(Node<T> *current, Node<T> *child);    // get parent of a node
+    Node<T> *findRecursive(Node<T> *currentNode, T value);   // helper function to find function to recursivly look in the tree
+    Node<T> *searchRecursive(Node<T> *currentNode, T value); // helper function to search function to recursivly look for the tree
+    void inOrderTraversal(Node<T> *currentNode, int depth);  // function for traversing tree printing all elements
+
+}; // class Tree
 
 template <typename T>
 Tree<T>::Tree()
@@ -125,7 +127,6 @@ void Tree<T>::insert(T data)
 template <typename T>
 void Tree<T>::balance(Node<T> *node)
 {
-    // cout << "BALANCING" << endl;
     if (node == root)
     {
         // create the new nodes for splitting into
@@ -237,7 +238,6 @@ void Tree<T>::balance(Node<T> *node)
 template <typename T>
 void Tree<T>::deleteVal(T value)
 {
-    cout << "DELETE" << endl;
     Node<T> *nodeWithVal = find(value);
     cout << "NODE: " << nodeWithVal->val1 << " " << nodeWithVal->val2 << " " << nodeWithVal->val3 << " " << nodeWithVal->val4 << endl;
     cout << "isLeaf: " << nodeWithVal->isLeaf() << endl;
@@ -271,7 +271,7 @@ void Tree<T>::deleteVal(T value)
     {
         cout << value << " not deleted. Not in a leaf node." << endl;
     }
-}
+} // deleteVal
 
 template <typename T>
 bool Tree<T>::insertIntoNode(Node<T> *node, T data)
@@ -367,7 +367,9 @@ template <typename T>
 Node<T> *Tree<T>::searchRecursive(Node<T> *currentNode, T value)
 {
     if (currentNode == nullptr)
+    {
         return nullptr;
+    }
 
     // If the current node is a leaf or contains the data, return it
     if (currentNode->chld1 == nullptr && currentNode->chld2 == nullptr && currentNode->chld3 == nullptr && currentNode->chld4 == nullptr)
@@ -428,15 +430,15 @@ void Tree<T>::print()
 {
     inOrderTraversal(root, 0); // Start with depth 0
     cout << endl;
-}
+} // print
 
 template <typename T>
 void Tree<T>::inOrderTraversal(Node<T> *currentNode, int depth)
 {
     if (currentNode != nullptr)
     {
-        // Traverse the right subtree
-        inOrderTraversal(currentNode->chld4, depth + 1);
+        // Traverse the left and middle subtrees
+        inOrderTraversal(currentNode->chld1, depth + 1);
 
         // Print the values of the current node with indentation based on depth
         for (int i = 0; i < depth; ++i)
@@ -458,11 +460,15 @@ void Tree<T>::inOrderTraversal(Node<T> *currentNode, int depth)
             cout << ", " << currentNode->val4;
         cout << "]" << endl;
 
-        // Traverse the left and middle subtrees
-        inOrderTraversal(currentNode->chld1, depth + 1);
+        // Traverse the right subtree
+        inOrderTraversal(currentNode->chld4, depth + 1);
+
+        // Traverse the middle and right subtrees
         inOrderTraversal(currentNode->chld2, depth + 1);
         inOrderTraversal(currentNode->chld3, depth + 1);
     }
 }
+// inOrderTraversal
+// __________ Tree __________
 
 #endif
