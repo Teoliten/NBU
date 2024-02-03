@@ -4,7 +4,8 @@ using namespace std;
 
 #include "tree2.h"
 
-int main() {
+int main()
+{
     Tree<int> t;
 
     t.insert(10);
@@ -34,5 +35,9 @@ int main() {
 
     t.print();
 
+    t.deleteVal(80);
+    t.deleteVal(30);
+
+    t.print();
     return 0;
 }
