@@ -1,78 +1,111 @@
 #include <iostream>
 #include <vector>
-#include <map>
-#include <set>
-#include <climits> // For INT_MAX
+#include <queue>
+#include <unordered_map>
+#include <limits>
 
 using namespace std;
 
-template <typename WeightType>
+template <typename T>
 class Graph {
+private:
+    unordered_map<int, vector<pair<int, T>>> adjList;
+    bool directed;
+
 public:
-    Graph() {}
+    Graph(bool directed = false) : directed(directed) {}
 
-    void addEdge(int u, int v, WeightType weight, bool directed = false) {
-        adjList[u].emplace_back(v, weight);
+    void addEdge(int src, int dest, T weight = T()) {
+        adjList[src].push_back(make_pair(dest, weight));
         if (!directed) {
-            adjList[v].emplace_back(u, weight);
+            adjList[dest].push_back(make_pair(src, weight));
         }
     }
 
-    WeightType findMinKey(const set<int>& vertices, const vector<WeightType>& key) {
-        WeightType minKey = INT_MAX;
-        int minVertex = -1;
-        for (int v : vertices) {
-            if (key[v] < minKey) {
-                minKey = key[v];
-                minVertex = v;
+    void printGraph() {
+        for (auto& vertex : adjList) {
+            cout << vertex.first << " : ";
+            for (auto& neighbor : vertex.second) {
+                cout << "(" << neighbor.first << ", " << neighbor.second << ") ";
             }
+            cout << endl;
         }
-        return minVertex;
     }
 
-    void primMST() {
-        vector<WeightType> key(adjList.size(), INT_MAX); // Initialize key values
-        vector<int> parent(adjList.size(), -1); // Initialize parent array
-        set<int> vertices; // Set of vertices not yet included in MST
+    vector<pair<int, T>> getNeighbors(int vertex) {
+        return adjList[vertex];
+    }
 
-        // Start with vertex 0
-        key[0] = 0;
-        vertices.insert(0);
+    vector<pair<int, T>> primsMST() {
+        priority_queue<pair<T, int>, vector<pair<T, int>>, greater<pair<T, int>>> pq;
+        unordered_map<int, bool> visited;
+        unordered_map<int, int> parent;
+        vector<pair<int, T>> mst;
 
-        while (!vertices.empty()) {
-            int u = findMinKey(vertices, key);
-            vertices.erase(u);
+        // Initialize distances to infinity and mark all vertices as unvisited
+        for (auto& vertex : adjList) {
+            visited[vertex.first] = false;
+            parent[vertex.first] = -1;
+        }
 
-            for (const auto& [v, weight] : adjList[u]) {
-                if (vertices.count(v) && weight < key[v]) {
+        // Start from the first vertex
+        pq.push(make_pair(0, adjList.begin()->first));
+
+        while (!pq.empty()) {
+            auto top = pq.top();
+            pq.pop();
+            int u = top.second;
+            T u_dist = top.first;
+
+            // Skip if vertex already visited
+            if (visited[u])
+                continue;
+
+            // Mark current vertex as visited
+            visited[u] = true;
+            if (parent[u] != -1)
+                mst.push_back(make_pair(u, u_dist));
+
+            // Explore neighbors
+            for (auto& neighbor : adjList[u]) {
+                int v = neighbor.first;
+                T v_dist = neighbor.second;
+                if (!visited[v]) {
+                    pq.push(make_pair(v_dist, v));
                     parent[v] = u;
-                    key[v] = weight;
                 }
             }
         }
 
-        // Print MST
-        cout << "Minimum Spanning Tree:" << endl;
-        for (int i = 1; i < adjList.size(); ++i) {
-            cout << "Edge: (" << parent[i] << ", " << i << ") Weight: " << key[i] << endl;
-        }
+        return mst;
     }
-
-private:
-    map<int, vector<pair<int, WeightType>>> adjList;
 };
 
 int main() {
-    Graph<int> weightedGraph;
-    weightedGraph.addEdge(0, 1, 9);
-    weightedGraph.addEdge(0, 2, 75);
-    weightedGraph.addEdge(1, 2, 95);
-    weightedGraph.addEdge(1, 3, 19);
-    weightedGraph.addEdge(1, 4, 42);
-    weightedGraph.addEdge(2, 3, 51);
-    weightedGraph.addEdge(2, 4, 66);
+    Graph<int> g;
+    g.addEdge(0, 1, 4);
+    g.addEdge(0, 7, 8);
+    g.addEdge(1, 2, 8);
+    g.addEdge(1, 7, 11);
+    g.addEdge(2, 3, 7);
+    g.addEdge(2, 8, 2);
+    g.addEdge(2, 5, 4);
+    g.addEdge(3, 4, 9);
+    g.addEdge(3, 5, 14);
+    g.addEdge(4, 5, 10);
+    g.addEdge(5, 6, 2);
+    g.addEdge(6, 7, 1);
+    g.addEdge(6, 8, 6);
+    g.addEdge(7, 8, 7);
 
-    weightedGraph.primMST();
+    cout << "Graph:\n";
+    g.printGraph();
+
+    cout << "\nMinimum Spanning Tree (Prim's Algorithm):\n";
+    auto mst = g.primsMST();
+    for (auto& edge : mst) {
+        cout << edge.first << " - " << edge.second << endl;
+    }
 
     return 0;
 }
