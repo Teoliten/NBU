@@ -33,7 +33,8 @@ void Graph::addEdgeUndirected(int vertexA, int vertexB, int weight)
     adjacencyList[vertexB].push_back({vertexA, weight});
 }
 
-void Graph::printList() {
+void Graph::printList() 
+{
     cout << vertices;
     for (int i = 0; i < vertices; ++i) 
     {
@@ -122,7 +123,7 @@ int main()
     int input;
     cin >> input;
     cout << "BFS starting from vertex " << input << endl;
-    UD.BFS(input);
+    UD.BFS(0);
     
     return 0;
 }
