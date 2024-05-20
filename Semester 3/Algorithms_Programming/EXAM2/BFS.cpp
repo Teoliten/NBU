@@ -13,7 +13,7 @@ public:
 
 private:
     int vertices;
-    vector<pair<int, int>> *adjacencyList; 
+    vector<pair<int, int>> *adjacencyList;
 };
 
 Graph::Graph(int vertices)
@@ -33,10 +33,10 @@ void Graph::addEdgeUndirected(int vertexA, int vertexB, int weight)
     adjacencyList[vertexB].push_back({vertexA, weight});
 }
 
-void Graph::printList() 
+void Graph::printList()
 {
     cout << vertices;
-    for (int i = 0; i < vertices; ++i) 
+    for (int i = 0; i < vertices; ++i)
     {
         cout << "\n Vertex " << i << ":";
         for (auto edge : adjacencyList[i])
@@ -51,12 +51,11 @@ void Graph::BFS(int start)
 {
     vector<int> distance(vertices, INT_MAX);
     vector<bool> visited(vertices, false);
-    
+
     priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
 
     distance[start] = 0;
     pq.push({0, start});
-
     while (!pq.empty())
     {
         // Get the vertex with minimum distance from the priority queue
@@ -105,7 +104,6 @@ int main()
     cout << "BFS starting from vertex 0:\n";
     D.BFS(0);
 
-
     Graph UD(10); // Create an UNDIRECTIONAL adjacency list with 10 vertices WEIGHTED EDGES
     UD.addEdgeUndirected(0, 1, 3);
     UD.addEdgeUndirected(1, 2, 4);
@@ -123,7 +121,7 @@ int main()
     int input;
     cin >> input;
     cout << "BFS starting from vertex " << input << endl;
-    UD.BFS(0);
-    
+    UD.BFS(input);
+
     return 0;
 }
