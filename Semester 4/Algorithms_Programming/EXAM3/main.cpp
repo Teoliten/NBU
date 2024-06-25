@@ -1,11 +1,10 @@
 #include <bits/stdc++.h>
-#include "Graph.h"
+#include "graph.h"
 
-// Implement the following program using C++ programming language. 
-// Use separate compilation (define classes in .h and implement them in .cpp). 
-// Represent a directed graph using adjacency lists. I
-// mplement the Ford-Fulkerson method. Test the solution.
-// Answer text Question 1
+// Implement the following program using C++ programming language.
+// Use separate compilation (define classes in .h and implement them in .cpp).
+// Represent a directed graph using adjacency lists.
+// Implement the Ford-Fulkerson method. Test the solution.
 
 using namespace std;
 
@@ -15,7 +14,7 @@ int main()
     // cin >> vertices;
 
     Graph g(vertices);
-    
+
     g.addEdge(0, 1, 16);
     g.addEdge(0, 2, 13);
     g.addEdge(1, 2, 10);
@@ -26,8 +25,8 @@ int main()
     g.addEdge(3, 5, 20);
     g.addEdge(4, 3, 7);
     g.addEdge(4, 5, 4);
-    
+
     cout << "The maximum possible flow is " << g.fordFulkerson(0, 5) << endl; // Source is 0 and Sink is 5
-    
+
     return 0;
-}//main
+} // main
